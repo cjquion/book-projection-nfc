@@ -1,3 +1,7 @@
+/**
+ * Using RS300 Felica NFC device to read tags and project custom videos 
+ */
+
 #include <stdlib.h>
 #include <nfc/nfc.h>
 #include <inttypes.h>
@@ -113,6 +117,15 @@ int main(int argc, const char *argv[])
     printf("Beginning poll\n");
     int i = 0;
     int time = 600;
+
+    // the RS300 doesnt work with libnfc poll function 
+    //-- it polls for a microsecond and powers off
+    // so workaround is to open device and context
+    // and use nfc_initiator_list_passive_targets,
+    // then free context and close device, in time-based loop
+    // RS300 with libnfc nfc_initiator_list_passive_targets
+    // with my tags seem to only pick up UID on a 2nd poll, so 
+    // wait for UID to show up 
     while (i < time)
     {
         // Allocate only a pointer to nfc_context
